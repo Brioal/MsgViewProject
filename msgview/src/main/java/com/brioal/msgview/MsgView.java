@@ -23,7 +23,6 @@ import android.widget.TextView;
 public class MsgView extends LinearLayout {
     public static final int STATUE_LOADING = 0;//加载状态
     public static final int STATUE_FAILED = 1;//失败状态
-    public static final int STATUE_DONE = 2;//成功状态
 
     private int mStatue = STATUE_LOADING;//当前状态
     private String mText = "";//要显示的文字
@@ -32,7 +31,7 @@ public class MsgView extends LinearLayout {
     private TextView mTextView;
     private Drawable mLoadingDrawable;//加载的画面
     private Drawable mErrorDrawable;//失败的动画
-    private OnClickListener mClickListener;
+    private OnReloadListener mReloadListener;
 
     public MsgView(Context context) {
         this(context, null);
@@ -64,8 +63,8 @@ public class MsgView extends LinearLayout {
         return this;
     }
 
-    public MsgView setClickListener(OnClickListener clickListener) {
-        mClickListener = clickListener;
+    public MsgView setReloadListener(OnReloadListener reloadListener) {
+        mReloadListener = reloadListener;
         return this;
     }
 
@@ -119,7 +118,7 @@ public class MsgView extends LinearLayout {
                 mImageView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        mClickListener.click();
+                        mReloadListener.reload();
                     }
                 });
                 break;
@@ -138,7 +137,7 @@ public class MsgView extends LinearLayout {
         addView(mTextView, paramsTextView);
     }
 
-    public interface OnClickListener {
-        void click();
+    public interface OnReloadListener {
+        void reload();
     }
 }

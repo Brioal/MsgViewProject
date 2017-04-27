@@ -20,7 +20,6 @@ public class MainActivity extends AppCompatActivity {
         mMsgView = (MsgView) findViewById(R.id.main_msgView);
         mBtnLoad = (Button) findViewById(R.id.main_btn_refresh);
         mBtnFailed = (Button) findViewById(R.id.main_btn_failed);
-
         mBtnLoad.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -30,9 +29,9 @@ public class MainActivity extends AppCompatActivity {
         mBtnFailed.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mMsgView.setText("加载失败,点击重试").setStatue(MsgView.STATUE_FAILED).setClickListener(new MsgView.OnClickListener() {
+                mMsgView.setText("加载失败,点击重试").setStatue(MsgView.STATUE_FAILED).setReloadListener(new MsgView.OnReloadListener() {
                     @Override
-                    public void click() {
+                    public void reload() {
                         mMsgView.setText("加载中").setStatue(MsgView.STATUE_LOADING).build();
                     }
                 }).build();
