@@ -1,6 +1,23 @@
 # MsgViewProject
 加载,错误提示组件
-
+## 使用方法
+### 1.在项目的build.gradle文件做如下修改
+```
+allprojects {
+		repositories {
+			...
+			maven { url 'https://jitpack.io' }
+		}
+	}
+```
+### 2.在app的build.gradle内作如下修改
+```
+dependencies {
+      ...
+	    compile 'com.github.Brioal:MsgViewProject:1.0'
+      ...
+}
+```
 ## 效果演示:
 ![](https://github.com/Brioal/MsgViewProject/blob/master/art/1.gif)
 
