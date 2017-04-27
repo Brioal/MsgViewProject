@@ -10,7 +10,7 @@ allprojects {
 		}
 	}
 ```
-### 2.在app的build.gradle内作如下修改
+### 2.在app的build.gradle内作如下修改,最新版本号为[![](https://jitpack.io/v/Brioal/MsgViewProject.svg)](https://jitpack.io/#Brioal/MsgViewProject)
 ```
 dependencies {
       ...
