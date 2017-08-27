@@ -118,6 +118,9 @@ public class MsgView extends LinearLayout {
                 mImageView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+                        if (mReloadListener == null) {
+                            return;
+                        }
                         mReloadListener.reload();
                     }
                 });
