@@ -9,20 +9,26 @@
     android:orientation="vertical"
     tools:context="com.brioal.msgviewproject.MainActivity">
 
-    <com.brioal.msgview.MsgView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+    <com.brioal.msgviewproject.TestMsgView
         android:id="@+id/main_msgView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
         android:layout_weight="1"/>
 
     <Button
+        android:onClick="refresh"
         android:layout_width="wrap_content"
-        android:id="@+id/main_btn_refresh"
         android:layout_height="wrap_content"
         android:text="加载状态"/>
 
     <Button
-        android:id="@+id/main_btn_failed"
+        android:onClick="done"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="完成状态"/>
+
+    <Button
+        android:onClick="failed"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="失败状态"/>

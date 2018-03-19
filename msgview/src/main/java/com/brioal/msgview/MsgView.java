@@ -6,6 +6,7 @@ import android.graphics.drawable.Drawable;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
@@ -20,18 +21,22 @@ import android.widget.TextView;
  * Created by brioa on 2017/4/22.
  */
 
-public class MsgView extends LinearLayout {
-    public static final int STATUE_LOADING = 0;//加载状态
-    public static final int STATUE_FAILED = 1;//失败状态
+public abstract class MsgView extends LinearLayout {
 
-    private int mStatue = STATUE_LOADING;//当前状态
-    private String mText = "";//要显示的文字
-    private Context mContext;
-    private ImageView mImageView;
-    private TextView mTextView;
-    private Drawable mLoadingDrawable;//加载的画面
-    private Drawable mErrorDrawable;//失败的动画
+    // 是否是加载模式
+    private boolean isLoading;
+    // 是否是失败模式
+    private boolean isError;
+    // 是否加载完成
+    private boolean isLoadDone;
+    // 加载的View
+    private View mLoadingView;
+    // 错误的View
+    private View mErrorView;
+    // 重试监听器
     private OnReloadListener mReloadListener;
+
+    private Context mContext;
 
     public MsgView(Context context) {
         this(context, null);
@@ -40,104 +45,108 @@ public class MsgView extends LinearLayout {
     public MsgView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
         mContext = context;
-        init();
     }
 
-    public MsgView setLoadingDrawable(Drawable loadingDrawable) {
-        mLoadingDrawable = loadingDrawable;
+    /**
+     * 返回默认的article加载进度
+     * @return
+     */
+    public int getDefaultArticleLoadingView() {
+        return R.layout.layout_loading_article;
+    }
+
+    /**
+     * 返回正在加载的布局文件
+     *
+     * @return
+     */
+    protected abstract int getLoadingView();
+
+    /**
+     * 返回加载失败的View
+     *
+     * @return
+     */
+    protected abstract int getLoadFailedView();
+
+    /**
+     * @return
+     */
+    public MsgView setError() {
+        isError = true;
+        isLoadDone = false;
+        isLoading = false;
         return this;
     }
 
-    public MsgView setErrorDrawable(Drawable errorDrawable) {
-        mErrorDrawable = errorDrawable;
+    /**
+     * 设置加载完成
+     */
+    public MsgView setLoadDone() {
+        isError = false;
+        isLoadDone = true;
+        isLoading = false;
         return this;
     }
 
-    public MsgView setStatue(int statue) {
-        mStatue = statue;
+    /**
+     * 设置正在加载
+     *
+     * @return
+     */
+    public MsgView setLoading() {
+        isError = false;
+        isLoadDone = false;
+        isLoading = true;
         return this;
     }
 
-    public MsgView setText(String text) {
-        mText = text;
-        return this;
-    }
 
+    /**
+     * 设置重试监听器
+     *
+     * @param reloadListener
+     * @return
+     */
     public MsgView setReloadListener(OnReloadListener reloadListener) {
         mReloadListener = reloadListener;
         return this;
     }
 
-    private void init() {
-        mImageView = new ImageView(mContext);
-        mTextView = new TextView(mContext);
-        mLoadingDrawable = mContext.getResources().getDrawable(R.drawable.ic_refresh_green);
-        mErrorDrawable = mContext.getResources().getDrawable(R.drawable.ic_error_red);
-    }
-
     public void build() {
-        mImageView.clearAnimation();
-        removeAllViews();
-        setGravity(Gravity.CENTER);
-        setBackgroundColor(Color.WHITE);
-        setOrientation(LinearLayout.VERTICAL);
-        //添加图片
-        LayoutParams paramsImageView = new LayoutParams(SizeUtil.DpToPx(mContext, 60), SizeUtil.DpToPx(mContext, 60));
-        paramsImageView.leftMargin = SizeUtil.DpToPx(mContext, 15);
-        paramsImageView.topMargin = SizeUtil.DpToPx(mContext, 15);
-        paramsImageView.rightMargin = SizeUtil.DpToPx(mContext, 15);
-        paramsImageView.bottomMargin = SizeUtil.DpToPx(mContext, 15);
-        mImageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-        switch (mStatue) {
-            case STATUE_LOADING:
-                mImageView.setImageDrawable(mLoadingDrawable);
-                Animation animation = AnimationUtils.loadAnimation(mContext, R.anim.anim_rotating);
-                animation.setAnimationListener(new Animation.AnimationListener() {
-                    @Override
-                    public void onAnimationStart(Animation animation) {
-
-                    }
-
-                    @Override
-                    public void onAnimationEnd(Animation animation) {
-                        if (mStatue == STATUE_LOADING) {
-                            mImageView.startAnimation(animation);
-                        }
-                    }
-
-                    @Override
-                    public void onAnimationRepeat(Animation animation) {
-
-                    }
-                });
-                animation.setDuration(900);
-                mImageView.startAnimation(animation);
-                break;
-            case STATUE_FAILED:
-                mImageView.setImageDrawable(mErrorDrawable);
-                mImageView.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        if (mReloadListener == null) {
-                            return;
-                        }
-                        mReloadListener.reload();
-                    }
-                });
-                break;
+        // 获取View
+        mLoadingView = LayoutInflater.from(mContext).inflate(getLoadingView(), this, false);
+        mErrorView = LayoutInflater.from(mContext).inflate(getLoadFailedView(), this, false);
+        if (mLoadingView == null) {
+            return;
         }
-        addView(mImageView, paramsImageView);
-        //添加文字
-        LayoutParams paramsTextView = new LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        paramsTextView.leftMargin = SizeUtil.DpToPx(mContext, 25);
-        paramsTextView.topMargin = SizeUtil.DpToPx(mContext, 25);
-        paramsTextView.rightMargin = SizeUtil.DpToPx(mContext, 25);
-        paramsTextView.bottomMargin = SizeUtil.DpToPx(mContext, 25);
-        mTextView.setTextColor(Color.BLACK);
-        mTextView.setText(mText);
-        mTextView.setTextSize(SizeUtil.SpToPx(mContext, 7));
-        mTextView.setGravity(Gravity.CENTER);
-        addView(mTextView, paramsTextView);
+        if (mErrorView == null) {
+            return;
+        }
+        removeAllViews();
+        if (isLoading) {
+            // 正在加载
+            setVisibility(VISIBLE);
+            addView(mLoadingView);
+        } else if ((isError)) {
+            // 加载失败
+            setVisibility(VISIBLE);
+            addView(mErrorView);
+            mErrorView.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (mReloadListener != null) {
+                        mReloadListener.reload();
+                        setLoading();
+                        build();
+                    }
+                }
+            });
+        } else {
+            // 加载完成
+            setVisibility(GONE);
+        }
+
     }
 
     public interface OnReloadListener {
