@@ -24,7 +24,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void failed(View view) {
-        mMsgView.setError().setReloadListener(new MsgView.OnReloadListener() {
+        mMsgView.setError("这是错误信息").setReloadListener(new MsgView.OnReloadListener() {
             @Override
             public void reload() {
 

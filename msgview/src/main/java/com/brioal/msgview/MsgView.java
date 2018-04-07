@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -35,6 +36,10 @@ public abstract class MsgView extends LinearLayout {
     private View mErrorView;
     // 重试监听器
     private OnReloadListener mReloadListener;
+    // 显示文字的TextView
+    private TextView mtvError;
+    // 错误数据
+    private String mErrorMsg;
 
     private Context mContext;
 
@@ -49,6 +54,7 @@ public abstract class MsgView extends LinearLayout {
 
     /**
      * 返回默认的article加载进度
+     *
      * @return
      */
     public int getDefaultArticleLoadingView() {
@@ -72,7 +78,8 @@ public abstract class MsgView extends LinearLayout {
     /**
      * @return
      */
-    public MsgView setError() {
+    public MsgView setError(String msg) {
+        mErrorMsg = msg;
         isError = true;
         isLoadDone = false;
         isLoading = false;
@@ -113,6 +120,13 @@ public abstract class MsgView extends LinearLayout {
         return this;
     }
 
+    /**
+     * 获取错误文字的id
+     *
+     * @return
+     */
+    protected abstract int getErrorTextViewId();
+
     public void build() {
         // 获取View
         mLoadingView = LayoutInflater.from(mContext).inflate(getLoadingView(), this, false);
@@ -132,6 +146,13 @@ public abstract class MsgView extends LinearLayout {
             // 加载失败
             setVisibility(VISIBLE);
             addView(mErrorView);
+            // 获取错误文字
+            if (getErrorTextViewId() != 0) {
+                mtvError = mErrorView.findViewById(getErrorTextViewId());
+                if (mtvError != null && mErrorMsg != null && !mErrorMsg.equals("")) {
+                    mtvError.setText(mErrorMsg);
+                }
+            }
             mErrorView.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View view) {

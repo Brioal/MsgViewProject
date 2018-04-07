@@ -31,4 +31,9 @@ public class TestMsgView extends MsgView {
     protected int getLoadFailedView() {
         return R.layout.layout_failed;
     }
+
+    @Override
+    protected int getErrorTextViewId() {
+        return R.id.layout_failed_tv_msg;
+    }
 }
